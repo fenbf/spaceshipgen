@@ -73,16 +73,18 @@ namespace space {
     using vec_of_wing = std::vector<std::string_view>;
     std::pair<vec_of_wing, vec_of_wing> get_wings(const std::vector<std::string_view>& wings) {
         vec_of_wing small, large;
-        auto is_small([](const auto &s){
-            constexpr auto sep = ' ';
-            auto pos = s.find(sep);
-            const auto pos_next = ++pos;
-            return s[pos_next] == 's';
-        });
-        auto is_large([](const auto &s){
+        auto fnext([](const auto &s){
           constexpr auto sep = ' ';
           auto pos = s.find(sep);
           const auto pos_next = ++pos;
+          return pos_next;
+        });
+        auto is_small([fnext](const auto &s){
+            const auto pos_next = fnext(s);
+            return s[pos_next] == 's';
+        });
+        auto is_large([fnext](const auto &s){
+          const auto pos_next = fnext(s);
           return s[pos_next] == 'l';
         });
         (void)std::copy_if(begin(wings), end(wings), std::back_inserter(small), is_small);
